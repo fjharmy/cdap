@@ -1752,7 +1752,7 @@
 
   <property>
     <name>metrics.messaging.fetcher.limit</name>
-    <value>200</value>
+    <value>2000</value>
     <description>
       Maximum number of metrics messages to be fetched from the messaging fetcher at a
       time. It is also the maximum number of metric values to be persisted in the metrics
@@ -1868,6 +1868,14 @@
     <value>${http.service.worker.threads}</value>
     <description>
       Number of Netty service worker threads for metrics HTTP services
+    </description>
+  </property>
+
+  <property>
+    <name>metrics.messaging.persist.threshold</name>
+    <value>20000</value>
+    <description>
+      Maximum number of metrics values stored in memory before persisting
     </description>
   </property>
 

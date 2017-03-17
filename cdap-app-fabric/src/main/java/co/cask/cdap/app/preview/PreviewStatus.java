@@ -33,7 +33,8 @@ public class PreviewStatus {
     COMPLETED,
     DEPLOY_FAILED,
     RUN_FAILED,
-    KILLED
+    KILLED,
+    KILLED_BY_TIMER
   }
 
   private final Status status;

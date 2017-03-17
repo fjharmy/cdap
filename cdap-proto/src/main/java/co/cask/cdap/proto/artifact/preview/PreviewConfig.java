@@ -33,13 +33,15 @@ public class PreviewConfig {
   private final ProgramType programType;
   private final Set<String> realDatasets;
   private final Map<String, String> runtimeArgs;
+  private final Integer runningTime;
 
   public PreviewConfig(String programName, ProgramType programType, @Nullable Set<String> realDatasets,
-                       @Nullable Map<String, String> runtimeArgs) {
+                       @Nullable Map<String, String> runtimeArgs, @Nullable Integer runningTime) {
     this.programName = programName;
     this.programType = programType;
     this.realDatasets = realDatasets == null ? new HashSet<String>() : new HashSet<>(realDatasets);
     this.runtimeArgs = runtimeArgs == null ? new HashMap<String, String>() : new HashMap<>(runtimeArgs);
+    this.runningTime = runningTime;
   }
 
   public String getProgramName() {
@@ -56,5 +58,10 @@ public class PreviewConfig {
 
   public Map<String, String> getRuntimeArgs() {
     return runtimeArgs;
+  }
+
+  public int getRunningTime() {
+    // by default the running time is 10 mins
+    return runningTime == null ? 10 : runningTime;
   }
 }

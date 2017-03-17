@@ -54,6 +54,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.inject.Inject;
 import org.apache.twill.common.Threads;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,13 +63,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.annotation.Nullable;
 
 /**
  * Default implementation of the {@link PreviewRunner}.
  */
 public class DefaultPreviewRunner extends AbstractIdleService implements PreviewRunner {
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultPreviewRunner.class);
   private static final Gson GSON = new Gson();
+  // default to 10 mins
+  private static final int DEFAULT_TIMEOUT = 10;
   private static final ProgramTerminator NOOP_PROGRAM_TERMINATOR = new ProgramTerminator() {
     @Override
     public void stop(ProgramId programId) throws Exception {
@@ -87,8 +94,10 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
   private final ProgramStore programStore;
 
   private volatile PreviewStatus status;
+  private volatile boolean iskilledByTimer;
   private ProgramId programId;
   private ProgramRunId runId;
+  private Timer timer;
 
   @Inject
   DefaultPreviewRunner(DatasetService datasetService, LogAppenderInitializer logAppenderInitializer,
@@ -138,6 +147,21 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
     ProgramController controller = programLifecycleService.start(
       programId, previewConfig == null ? Collections.<String, String>emptyMap() : previewConfig.getRuntimeArgs(),
       false);
+    timer = new Timer();
+    final int runningTime = previewConfig == null ? DEFAULT_TIMEOUT : previewConfig.getRunningTime();
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        try {
+          iskilledByTimer = true;
+          LOG.info("Stopping the preview since it has reached running time: {} mins.", runningTime);
+          stopPreview();
+        } catch (Exception e) {
+          iskilledByTimer = false;
+          LOG.debug("Error shutting down the preview run with id: {}", programId);
+        }
+      }
+    }, runningTime * 60 * 1000);
 
     controller.addListener(new AbstractListener() {
       @Override
@@ -153,7 +177,11 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
 
       @Override
       public void killed() {
-        setStatus(new PreviewStatus(PreviewStatus.Status.KILLED, null));
+        if (!iskilledByTimer) {
+          setStatus(new PreviewStatus(PreviewStatus.Status.KILLED, null));
+        } else {
+          setStatus(new PreviewStatus(PreviewStatus.Status.KILLED_BY_TIMER, null));
+        }
         shutDownUnrequiredServices();
       }
 
@@ -231,6 +259,7 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
   }
 
   private void shutDownUnrequiredServices() {
+    timer.cancel();
     programRuntimeService.stopAndWait();
     applicationLifecycleService.stopAndWait();
     systemArtifactLoader.stopAndWait();

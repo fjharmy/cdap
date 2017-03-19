@@ -21,6 +21,8 @@ var LiveReloadPlugin = require('webpack-livereload-plugin');
 var LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var StyleLintPlugin = require('stylelint-webpack-plugin');
+var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+
 var plugins = [
   new webpack.DllReferencePlugin({
     context: path.resolve(__dirname, 'dll'),
@@ -164,6 +166,14 @@ if (mode !== 'production') {
   webpackConfig = Object.assign({}, webpackConfig, {
     devtool: 'source-map',
     plugins:  plugins.concat([
+      new BrowserSyncPlugin({
+          host: 'localhost',
+          port: 3000,
+          proxy: 'http://localhost:11011',
+          browser: ["google chrome", "firefox"]
+        },
+        {reload: false}
+      ),
       new LiveReloadPlugin({
         port: 35728,
         appendScriptTag: true

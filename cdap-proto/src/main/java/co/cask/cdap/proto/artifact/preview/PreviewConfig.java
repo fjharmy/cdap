@@ -29,19 +29,22 @@ import javax.annotation.Nullable;
  * Preview configuration in the {@link AppRequest}.
  */
 public class PreviewConfig {
+  // default to 10 mins
+  public static final int DEFAULT_TIMEOUT = 10;
+
   private final String programName;
   private final ProgramType programType;
   private final Set<String> realDatasets;
   private final Map<String, String> runtimeArgs;
-  private final Integer runningTime;
+  private final Integer timeout;
 
   public PreviewConfig(String programName, ProgramType programType, @Nullable Set<String> realDatasets,
-                       @Nullable Map<String, String> runtimeArgs, @Nullable Integer runningTime) {
+                       @Nullable Map<String, String> runtimeArgs, @Nullable Integer timeout) {
     this.programName = programName;
     this.programType = programType;
     this.realDatasets = realDatasets == null ? new HashSet<String>() : new HashSet<>(realDatasets);
     this.runtimeArgs = runtimeArgs == null ? new HashMap<String, String>() : new HashMap<>(runtimeArgs);
-    this.runningTime = runningTime;
+    this.timeout = timeout;
   }
 
   public String getProgramName() {
@@ -60,8 +63,8 @@ public class PreviewConfig {
     return runtimeArgs;
   }
 
-  public int getRunningTime() {
+  public int getTimeout() {
     // by default the running time is 10 mins
-    return runningTime == null ? 10 : runningTime;
+    return timeout == null ? DEFAULT_TIMEOUT : timeout;
   }
 }

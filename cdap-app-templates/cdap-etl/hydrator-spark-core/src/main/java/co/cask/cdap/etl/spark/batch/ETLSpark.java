@@ -123,7 +123,8 @@ public class ETLSpark extends AbstractSpark {
 
       if (BatchSource.PLUGIN_TYPE.equals(pluginType)) {
         BatchConfigurable<BatchSourceContext> batchSource = context.newPluginInstance(stageName, evaluator);
-        BatchSourceContext sourceContext = new SparkBatchSourceContext(sourceFactory, context, lookProvider, stageInfo);
+        BatchSourceContext sourceContext = new SparkBatchSourceContext(sourceFactory, context, lookProvider, stageInfo,
+                                                                       context.getDataTracer(stageName).isEnabled());
         batchSource.prepareRun(sourceContext);
         finishers.add(batchSource, sourceContext);
       } else if (BatchSink.PLUGIN_TYPE.equals(pluginType)) {

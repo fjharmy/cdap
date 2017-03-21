@@ -22,6 +22,7 @@ import co.cask.cdap.api.dataset.DatasetManagementException;
 import co.cask.cdap.api.dataset.DatasetProperties;
 import co.cask.cdap.api.dataset.DatasetSpecification;
 import co.cask.cdap.api.dataset.module.DatasetModule;
+import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.data2.datafabric.dataset.DatasetsUtil;
 import co.cask.cdap.data2.datafabric.dataset.type.ConstantClassLoaderProvider;
 import co.cask.cdap.data2.datafabric.dataset.type.DatasetClassLoaderProvider;
@@ -276,8 +277,10 @@ public class PreviewDatasetFramework implements DatasetFramework {
       AuthorizationEnforcer enforcer;
 
       final boolean isUserDataset = DatasetsUtil.isUserDataset(datasetInstanceId);
+      final boolean isGetFromPreview = arguments != null ?
+        Boolean.valueOf(arguments.get(Constants.Preview.ENABLED)) : false;
       // only for the datasets from the real space enforce the authorization.
-      if (isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
+      if (!isGetFromPreview && isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
         enforcer = authorizationEnforcer;
       } else {
         enforcer = NOOP_ENFORCER;
@@ -287,7 +290,7 @@ public class PreviewDatasetFramework implements DatasetFramework {
                                                   null, new Callable<T>() {
           @Override
           public T call() throws Exception {
-            if (isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
+            if (!isGetFromPreview && isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
               return actualDatasetFramework.getDataset(datasetInstanceId, arguments, classLoader, classLoaderProvider,
                                                        owners, accessType);
             }

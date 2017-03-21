@@ -182,7 +182,8 @@ public class ETLMapReduce extends AbstractMapReduce {
       StageInfo stageInfo = phaseSpec.getPhase().getStage(sourceName);
       MapReduceSourceContext sourceContext = new MapReduceSourceContext(context, mrMetrics,
                                                                         new DatasetContextLookupProvider(context),
-                                                                        context.getRuntimeArguments(), stageInfo);
+                                                                        context.getRuntimeArguments(), stageInfo,
+                                                                        context.getDataTracer(sourceName).isEnabled());
       batchSource.prepareRun(sourceContext);
       runtimeArgs.put(sourceName, sourceContext.getRuntimeArguments());
       for (String inputAlias : sourceContext.getInputNames()) {

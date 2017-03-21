@@ -24,6 +24,7 @@ import co.cask.cdap.api.data.batch.OutputFormatProvider;
 import co.cask.cdap.api.dataset.Dataset;
 import co.cask.cdap.api.dataset.DatasetManagementException;
 import co.cask.cdap.api.dataset.DatasetProperties;
+import co.cask.cdap.etl.batch.preview.NullOutputFormatProvider;
 import com.google.common.base.Throwables;
 
 import java.util.Collections;
@@ -107,7 +108,7 @@ public final class ExternalDatasets {
 
     // Output is a dataset that implements input format provider,
     // this can be tracked by itself without creating an external dataset
-    if (outputFormatProvider instanceof Dataset) {
+    if (outputFormatProvider instanceof Dataset || outputFormatProvider instanceof NullOutputFormatProvider) {
       return output;
     }
 

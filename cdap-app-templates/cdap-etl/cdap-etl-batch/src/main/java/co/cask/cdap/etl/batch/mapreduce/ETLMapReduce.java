@@ -205,7 +205,8 @@ public class ETLMapReduce extends AbstractMapReduce {
       batchSink = new LoggedBatchConfigurable<>(sinkName, batchSink);
       MapReduceSinkContext sinkContext = new MapReduceSinkContext(context, mrMetrics,
                                                                   new DatasetContextLookupProvider(context),
-                                                                  context.getRuntimeArguments(), stageInfo);
+                                                                  context.getRuntimeArguments(), stageInfo,
+                                                                  context.getDataTracer(sinkName).isEnabled());
       batchSink.prepareRun(sinkContext);
       runtimeArgs.put(sinkName, sinkContext.getRuntimeArguments());
       finishers.add(batchSink, sinkContext);

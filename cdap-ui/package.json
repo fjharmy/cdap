@@ -11,6 +11,7 @@
     "build-dlls": "NODE_ENV=production parallel-webpack --config=webpack.config.dlls.js",
     "cdap-dev-build": "NODE_ENV=development parallel-webpack --config=webpack.config.js -d",
     "cdap-dev-build-w": "NODE_ENV=development parallel-webpack --watch -d ",
+    "browser-test": "NODE_ENV=browser-testing parallel-webpack --config=webpack.config.js -d --watch",
     "test": "jest --coverage",
     "watch-test": "jest --watch",
     "karma-test": "node ./node_modules/karma/bin/karma start test/karma-conf.js",

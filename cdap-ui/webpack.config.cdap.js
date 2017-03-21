@@ -163,17 +163,19 @@ if (mode === 'production' || mode === 'build') {
 }
 
 if (mode !== 'production') {
+  if (mode === 'browser-testing') {
+    plugins.push(new BrowserSyncPlugin({
+        host: 'localhost',
+        port: 3000,
+        proxy: 'http://localhost:11011',
+        browser: ["google chrome", "firefox", "safari"]
+      },
+      {reload: false}
+    ));
+  }
   webpackConfig = Object.assign({}, webpackConfig, {
     devtool: 'source-map',
     plugins:  plugins.concat([
-      new BrowserSyncPlugin({
-          host: 'localhost',
-          port: 3000,
-          proxy: 'http://localhost:11011',
-          browser: ["google chrome", "firefox"]
-        },
-        {reload: false}
-      ),
       new LiveReloadPlugin({
         port: 35728,
         appendScriptTag: true

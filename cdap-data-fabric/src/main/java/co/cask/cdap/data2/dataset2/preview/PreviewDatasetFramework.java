@@ -277,10 +277,8 @@ public class PreviewDatasetFramework implements DatasetFramework {
       AuthorizationEnforcer enforcer;
 
       final boolean isUserDataset = DatasetsUtil.isUserDataset(datasetInstanceId);
-      final boolean isGetFromPreview = arguments != null ?
-        Boolean.valueOf(arguments.get(Constants.Preview.ENABLED)) : false;
       // only for the datasets from the real space enforce the authorization.
-      if (!isGetFromPreview && isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
+      if (isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
         enforcer = authorizationEnforcer;
       } else {
         enforcer = NOOP_ENFORCER;
@@ -290,7 +288,7 @@ public class PreviewDatasetFramework implements DatasetFramework {
                                                   null, new Callable<T>() {
           @Override
           public T call() throws Exception {
-            if (!isGetFromPreview && isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
+            if (isUserDataset && actualDatasetFramework.hasInstance(datasetInstanceId)) {
               return actualDatasetFramework.getDataset(datasetInstanceId, arguments, classLoader, classLoaderProvider,
                                                        owners, accessType);
             }

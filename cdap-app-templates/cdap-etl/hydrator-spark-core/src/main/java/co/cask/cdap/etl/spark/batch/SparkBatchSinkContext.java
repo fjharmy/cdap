@@ -76,6 +76,11 @@ public class SparkBatchSinkContext extends AbstractSparkBatchContext implements 
     sinkFactory.addOutput(getStageName(), trackableOutput);
   }
 
+  @Override
+  public boolean isPreviewEnabled() {
+    return isPreviewEnabled;
+  }
+
   /**
    * Suffix the alias of {@link Output} so that aliases of outputs are unique.
    */

@@ -96,6 +96,11 @@ public class MapReduceSinkContext extends MapReduceBatchContext implements Batch
     outputNames.add(trackableOutput.getAlias());
   }
 
+  @Override
+  public boolean isPreviewEnabled() {
+    return isPreviewEnabled;
+  }
+
   /**
    * @return set of outputs that were added
    */

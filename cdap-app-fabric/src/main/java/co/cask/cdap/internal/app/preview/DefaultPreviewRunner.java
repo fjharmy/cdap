@@ -149,10 +149,10 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
       programId, previewConfig == null ? Collections.<String, String>emptyMap() : previewConfig.getRuntimeArgs(),
       false);
 
-    // Only have the timer on realtime previews.
-    if (programId.getType().equals(ProgramType.SPARK)) {
+    // Only have timer if there is a timeout setting.
+    if (previewConfig != null && previewConfig.getTimeout() != null) {
       timer = new Timer();
-      final int runningTime = previewConfig == null ? PreviewConfig.DEFAULT_TIMEOUT : previewConfig.getTimeout();
+      final int runningTime =  previewConfig.getTimeout();
       timer.schedule(new TimerTask() {
         @Override
         public void run() {

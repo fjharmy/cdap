@@ -29,9 +29,6 @@ import javax.annotation.Nullable;
  * Preview configuration in the {@link AppRequest}.
  */
 public class PreviewConfig {
-  // default to 10 mins
-  public static final int DEFAULT_TIMEOUT = 10;
-
   private final String programName;
   private final ProgramType programType;
   private final Set<String> realDatasets;
@@ -63,8 +60,8 @@ public class PreviewConfig {
     return runtimeArgs;
   }
 
-  public int getTimeout() {
-    // by default the running time is 10 mins
-    return timeout == null ? DEFAULT_TIMEOUT : timeout;
+  @Nullable
+  public Integer getTimeout() {
+    return timeout;
   }
 }

@@ -48,11 +48,21 @@
     </description>
   </property>
 
+  <!-- Preview Configuration -->
+
   <property>
     <name>enable.preview</name>
     <value>true</value>
     <description>
       Determines if preview should be enabled.
+    </description>
+  </property>
+
+  <property>
+    <name>preview.cache.size</name>
+    <value>10</value>
+    <description>
+      The size of the preview cache.
     </description>
   </property>
 

@@ -134,8 +134,7 @@ public class DefaultPreviewManager implements PreviewManager {
 
     // TODO make maximum size and expire after write configurable?
     this.appInjectors = CacheBuilder.newBuilder()
-      .maximumSize(10)
-      .expireAfterWrite(15, TimeUnit.MINUTES)
+      .maximumSize(cConf.getInt(Constants.Preview.PREVIEW_CACHE_SIZE, 10))
       .removalListener(new RemovalListener<ApplicationId, Injector>() {
         @Override
         @ParametersAreNonnullByDefault

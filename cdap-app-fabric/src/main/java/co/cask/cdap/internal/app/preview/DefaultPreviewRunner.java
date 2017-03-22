@@ -40,6 +40,7 @@ import co.cask.cdap.logging.appender.LogAppenderInitializer;
 import co.cask.cdap.logging.gateway.handlers.store.ProgramStore;
 import co.cask.cdap.proto.BasicThrowable;
 import co.cask.cdap.proto.NamespaceMeta;
+import co.cask.cdap.proto.ProgramType;
 import co.cask.cdap.proto.artifact.AppRequest;
 import co.cask.cdap.proto.artifact.ArtifactSummary;
 import co.cask.cdap.proto.artifact.preview.PreviewConfig;
@@ -147,21 +148,25 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
     ProgramController controller = programLifecycleService.start(
       programId, previewConfig == null ? Collections.<String, String>emptyMap() : previewConfig.getRuntimeArgs(),
       false);
-    timer = new Timer();
-    final int runningTime = previewConfig == null ? PreviewConfig.DEFAULT_TIMEOUT : previewConfig.getTimeout();
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        try {
-          killedByTimer = true;
-          LOG.info("Stopping the preview since it has reached running time: {} mins.", runningTime);
-          stopPreview();
-        } catch (Exception e) {
-          killedByTimer = false;
-          LOG.debug("Error shutting down the preview run with id: {}", programId);
+
+    // Only have the timer on realtime previews.
+    if (programId.getType().equals(ProgramType.SPARK)) {
+      timer = new Timer();
+      final int runningTime = previewConfig == null ? PreviewConfig.DEFAULT_TIMEOUT : previewConfig.getTimeout();
+      timer.schedule(new TimerTask() {
+        @Override
+        public void run() {
+          try {
+            killedByTimer = true;
+            LOG.info("Stopping the preview since it has reached running time: {} mins.", runningTime);
+            stopPreview();
+          } catch (Exception e) {
+            killedByTimer = false;
+            LOG.debug("Error shutting down the preview run with id: {}", programId);
+          }
         }
-      }
-    }, runningTime * 60 * 1000);
+      }, runningTime * 60 * 1000);
+    }
 
     controller.addListener(new AbstractListener() {
       @Override

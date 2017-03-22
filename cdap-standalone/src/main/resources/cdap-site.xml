@@ -62,7 +62,8 @@
     <name>preview.cache.size</name>
     <value>10</value>
     <description>
-      The size of the preview cache.
+      Number of preview runs for which data will be stored in memory. When size exceeds,
+      data for the oldest run will be removed from memory and no longer retrievable.
     </description>
   </property>
 

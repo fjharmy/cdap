@@ -27,6 +27,7 @@ import SplitColumn from 'components/DataPrep/Directives/SplitColumn';
 import FillNullOrEmpty from 'components/DataPrep/Directives/FillNullOrEmpty';
 import DropColumn from 'components/DataPrep/Directives/DropColumn';
 import CopyColumn from 'components/DataPrep/Directives/CopyColumn';
+import KeepColumn from 'components/DataPrep/Directives/KeepColumn';
 
 require('./ColumnActionsDropdown.scss');
 
@@ -49,6 +50,10 @@ export default class ColumnActionsDropdown extends Component {
       {
         id: shortid.generate(),
         tag: DropColumn
+      },
+      {
+        id: shortid.generate(),
+        tag: KeepColumn
       },
       {
         id: shortid.generate(),

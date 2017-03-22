@@ -24,6 +24,7 @@ import co.cask.cdap.app.preview.PreviewHttpModule;
 import co.cask.cdap.app.preview.PreviewManager;
 import co.cask.cdap.app.preview.PreviewRunner;
 import co.cask.cdap.common.conf.CConfiguration;
+import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.guice.ConfigModule;
 import co.cask.cdap.common.guice.DiscoveryRuntimeModule;
 import co.cask.cdap.common.guice.IOModule;
@@ -72,8 +73,10 @@ public class DefaultPreviewManagerTest {
 
   @BeforeClass
   public static void beforeClass() throws Throwable {
+    CConfiguration cconf = CConfiguration.create();
+    cconf.setInt(Constants.Preview.PREVIEW_CACHE_SIZE, 10);
     injector = Guice.createInjector(
-      new ConfigModule(CConfiguration.create(), new Configuration()),
+      new ConfigModule(cconf, new Configuration()),
       new IOModule(),
       new DataFabricModules().getInMemoryModules(),
       new DataSetsModules().getStandaloneModules(),

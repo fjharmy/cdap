@@ -74,7 +74,6 @@ class DatasetServiceClient {
   private final NamespaceId namespaceId;
   private final boolean securityEnabled;
   private final boolean kerberosEnabled;
-  private final boolean authorizationEnabled;
   private final AuthenticationContext authenticationContext;
   private final String masterShortUserName;
 
@@ -86,7 +85,6 @@ class DatasetServiceClient {
     this.namespaceId = namespaceId;
     this.securityEnabled = cConf.getBoolean(Constants.Security.ENABLED);
     this.kerberosEnabled = SecurityUtil.isKerberosEnabled(cConf);
-    this.authorizationEnabled = cConf.getBoolean(Constants.Security.Authorization.ENABLED);
     this.authenticationContext = authenticationContext;
     String masterPrincipal = cConf.get(Constants.Security.CFG_CDAP_MASTER_KRB_PRINCIPAL);
     try {
@@ -306,7 +304,7 @@ class DatasetServiceClient {
   }
 
   private HttpRequest.Builder addUserIdHeader(HttpRequest.Builder builder) throws DatasetManagementException {
-    if (!securityEnabled || !authorizationEnabled) {
+    if (!securityEnabled) {
       return builder;
     }
 

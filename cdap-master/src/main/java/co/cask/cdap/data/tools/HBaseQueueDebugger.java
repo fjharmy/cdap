@@ -175,21 +175,10 @@ public class HBaseQueueDebugger extends AbstractIdleService {
 
     List<NamespaceMeta> namespaceMetas = namespaceQueryAdmin.list();
     for (final NamespaceMeta namespaceMeta : namespaceMetas) {
-      final Collection<ApplicationSpecification> apps = impersonator.doAs(
-        namespaceMeta.getNamespaceId(), new Callable<Collection<ApplicationSpecification>>() {
-        @Override
-        public Collection<ApplicationSpecification> call() throws Exception {
-          return store.getAllApplications(namespaceMeta.getNamespaceId());
-        }
-      });
+      final Collection<ApplicationSpecification> apps = store.getAllApplications(namespaceMeta.getNamespaceId());
       for (final ApplicationSpecification app : apps) {
         ApplicationId appId = new ApplicationId(namespaceMeta.getName(), app.getName(), app.getAppVersion());
-        Collection<FlowSpecification> flows = impersonator.doAs(appId, new Callable<Collection<FlowSpecification>>() {
-          @Override
-          public Collection<FlowSpecification> call() throws Exception {
-            return app.getFlows().values();
-          }
-        });
+        Collection<FlowSpecification> flows = app.getFlows().values();
         for (final FlowSpecification flow : flows) {
           final ProgramId flowId = appId.program(ProgramType.FLOW, flow.getName());
           impersonator.doAs(flowId, new Callable<Void>() {

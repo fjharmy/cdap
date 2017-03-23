@@ -133,7 +133,7 @@ public class DefaultPreviewManager implements PreviewManager {
     this.authorizationEnforcer = authorizationEnforcer;
 
     this.appInjectors = CacheBuilder.newBuilder()
-      .maximumSize(cConf.getInt(Constants.Preview.PREVIEW_CACHE_SIZE))
+      .maximumSize(cConf.getInt(Constants.Preview.PREVIEW_CACHE_SIZE, 10))
       .removalListener(new RemovalListener<ApplicationId, Injector>() {
         @Override
         @ParametersAreNonnullByDefault

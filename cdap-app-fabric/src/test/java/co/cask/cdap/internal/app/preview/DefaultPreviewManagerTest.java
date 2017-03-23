@@ -73,10 +73,8 @@ public class DefaultPreviewManagerTest {
 
   @BeforeClass
   public static void beforeClass() throws Throwable {
-    CConfiguration cconf = CConfiguration.create();
-    cconf.setInt(Constants.Preview.PREVIEW_CACHE_SIZE, 10);
     injector = Guice.createInjector(
-      new ConfigModule(cconf, new Configuration()),
+      new ConfigModule(CConfiguration.create(), new Configuration()),
       new IOModule(),
       new DataFabricModules().getInMemoryModules(),
       new DataSetsModules().getStandaloneModules(),

@@ -40,7 +40,6 @@ import co.cask.cdap.logging.appender.LogAppenderInitializer;
 import co.cask.cdap.logging.gateway.handlers.store.ProgramStore;
 import co.cask.cdap.proto.BasicThrowable;
 import co.cask.cdap.proto.NamespaceMeta;
-import co.cask.cdap.proto.ProgramType;
 import co.cask.cdap.proto.artifact.AppRequest;
 import co.cask.cdap.proto.artifact.ArtifactSummary;
 import co.cask.cdap.proto.artifact.preview.PreviewConfig;
@@ -140,7 +139,7 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
       applicationLifecycleService.deployApp(preview.getParent(), preview.getApplication(), preview.getVersion(),
                                             artifactId.toId(), config, NOOP_PROGRAM_TERMINATOR);
     } catch (Exception e) {
-      this.status = new PreviewStatus(PreviewStatus.Status.DEPLOY_FAILED, new BasicThrowable(e));
+      this.status = new PreviewStatus(PreviewStatus.Status.DEPLOY_FAILED, new BasicThrowable(e), null, null);
       throw e;
     }
 
@@ -171,28 +170,32 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
     controller.addListener(new AbstractListener() {
       @Override
       public void init(ProgramController.State currentState, @Nullable Throwable cause) {
-        setStatus(new PreviewStatus(PreviewStatus.Status.RUNNING, null));
+        setStatus(new PreviewStatus(PreviewStatus.Status.RUNNING, null, System.currentTimeMillis(), null));
       }
 
       @Override
       public void completed() {
-        setStatus(new PreviewStatus(PreviewStatus.Status.COMPLETED, null));
+        setStatus(new PreviewStatus(PreviewStatus.Status.COMPLETED, null, status.getStartTime(),
+                                    System.currentTimeMillis()));
         shutDownUnrequiredServices();
       }
 
       @Override
       public void killed() {
         if (!killedByTimer) {
-          setStatus(new PreviewStatus(PreviewStatus.Status.KILLED, null));
+          setStatus(new PreviewStatus(PreviewStatus.Status.KILLED, null, status.getStartTime(),
+                                      System.currentTimeMillis()));
         } else {
-          setStatus(new PreviewStatus(PreviewStatus.Status.KILLED_BY_TIMER, null));
+          setStatus(new PreviewStatus(PreviewStatus.Status.KILLED_BY_TIMER, null, status.getStartTime(),
+                                      System.currentTimeMillis()));
         }
         shutDownUnrequiredServices();
       }
 
       @Override
       public void error(Throwable cause) {
-        setStatus(new PreviewStatus(PreviewStatus.Status.RUN_FAILED, new BasicThrowable(cause)));
+        setStatus(new PreviewStatus(PreviewStatus.Status.RUN_FAILED, new BasicThrowable(cause), status.getStartTime(),
+                                    System.currentTimeMillis()));
         shutDownUnrequiredServices();
       }
     }, Threads.SAME_THREAD_EXECUTOR);
